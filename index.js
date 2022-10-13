@@ -3,7 +3,6 @@ const fetch = require('node-fetch')
 const Semaphore = require('async-mutex').Semaphore;
 const provider = new ethers.providers.Web3Provider(window.ethereum)
 
-// I'm lazy, lets use these as globals
  async function getReclaimStatusAndPrint(beraArr, contract, canClaimBaby, canClaimBand, htmlTable) {
     const abi = '[{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"hasClaimedRebase","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]'
 
@@ -12,16 +11,6 @@ const provider = new ethers.providers.Web3Provider(window.ethereum)
         JSON.parse(abi),
         provider
     )
-
-    let cols = ["name", "claimedBit", "hash"]
-    
-    if (canClaimBand) {
-        cols.splice(1, 0, "claimedBand")
-    } 
-    
-    if (canClaimBaby) {
-        cols.splice(1, 0, "claimedBaby")
-    }
 
     const semaphore = new Semaphore(5);
 
@@ -55,7 +44,15 @@ async function getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitCont
     let encoded = ethers.utils.solidityPack(['address','uint256'],[contract, parseInt(bear.tokenId)]);
     let hash = ethers.utils.keccak256(encoded);
     let res = await bitContract.hasClaimedRebase(hash);
-    let bitDisplayStr = res ? String.fromCharCode(0x2705) : String.fromCharCode(0x274C);
+    let bitDisplayStr;
+    let unclaimed = false;
+    
+    if (res) {
+        bitDisplayStr = String.fromCharCode(0x2705)
+    } else {
+        bitDisplayStr = String.fromCharCode(0x274C)
+        unclaimed = true;
+    }
     
     name.innerText = bear.name;
     row.appendChild(name);
@@ -64,7 +61,16 @@ async function getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitCont
 
     if (canClaimBaby) {
         let claimedBaby = await getRebasedAtStorageSlot(BABY_BEARS, hash, BABY_BEARS_SLOT_NUM, ethers, provider);
-        let babyDisplayStr = claimedBaby === 1 ? String.fromCharCode(0x2705) : String.fromCharCode(0x274C);
+        let babyDisplayStr;
+        
+        if (claimedBaby === 1) {
+            babyDisplayStr = String.fromCharCode(0x2705)
+        } else {
+            babyDisplayStr = String.fromCharCode(0x274C)
+            unclaimed = true;
+        }
+        
+        
         let babyCell = document.createElement("td");
         babyCell.innerText = babyDisplayStr;
         row.appendChild(babyCell);
@@ -72,7 +78,15 @@ async function getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitCont
     
     if (canClaimBand) {
         let claimedBand = await getRebasedAtStorageSlot(BAND_BEARS, hash, BAND_BEARS_SLOT_NUM, ethers, provider);
-        let bandDisplayStr = claimedBand === 1 ? String.fromCharCode(0x2705) : String.fromCharCode(0x274C);
+        let bandDisplayStr;
+        
+        if (claimedBand === 1) {
+            bandDisplayStr = String.fromCharCode(0x2705)
+        } else {
+            bandDisplayStr = String.fromCharCode(0x274C)
+            unclaimed = true;
+        }
+
         let bandCell = document.createElement("td");
         bandCell.innerText = bandDisplayStr;
         row.appendChild(bandCell);
@@ -82,9 +96,16 @@ async function getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitCont
     hashCell.innerText = hash;
     row.appendChild(hashCell);
 
+    if (unclaimed) {
+        row.classList.add("unclaimed")
+    }
+
     return row;
 }
 
+/*
+ * https://docs.soliditylang.org/en/v0.8.14/internals/layout_in_storage.html#mappings-and-dynamic-arrays
+ */
 async function getRebasedAtStorageSlot(contract, hash, slotNum) {
     const abiCoder = new ethers.utils.AbiCoder();
     
