@@ -2,9 +2,10 @@
 const ethers = require('ethers')
 const fetch = require('node-fetch')
 const Semaphore = require('async-mutex').Semaphore;
+const provider = new ethers.providers.Web3Provider(window.ethereum)
 
 // I'm lazy, lets use these as globals
- async function getReclaimStatusAndPrint(beraArr, contract, canClaimBaby, canClaimBand, htmlTable, ethers, provider) {
+ async function getReclaimStatusAndPrint(beraArr, contract, canClaimBaby, canClaimBand, htmlTable) {
     const abi = '[{"inputs":[{"internalType":"bytes32","name":"","type":"bytes32"}],"name":"hasClaimedRebase","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"}]'
 
     const bitContract = new ethers.Contract(
@@ -29,7 +30,7 @@ const Semaphore = require('async-mutex').Semaphore;
         const [value, release] = await semaphore.acquire();
 
         try {     
-            let row = await getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitContract, ethers, provider)
+            let row = await getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitContract)
             htmlTable.appendChild(row)
         }
         catch (error) {
@@ -41,7 +42,7 @@ const Semaphore = require('async-mutex').Semaphore;
     })
 }
 
-async function getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitContract, ethers, provider) {
+async function getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitContract) {
     const BABY_BEARS_SLOT_NUM = 18;
     const BAND_BEARS_SLOT_NUM = 16;
    
@@ -85,7 +86,7 @@ async function getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitCont
     return row;
 }
 
-async function getRebasedAtStorageSlot(contract, hash, slotNum, ethers, provider) {
+async function getRebasedAtStorageSlot(contract, hash, slotNum) {
     const abiCoder = new ethers.utils.AbiCoder();
     
     const encoded = abiCoder.encode(
@@ -98,7 +99,7 @@ async function getRebasedAtStorageSlot(contract, hash, slotNum, ethers, provider
     return ethers.utils.stripZeros(res)[0]
 }
 
- async function generateAll(cachedBears) {
+ async function init(cachedBears) {
     const bondLimit = 126;
     const booLimit = 271;
     const babyLimit = 571;
@@ -121,15 +122,7 @@ async function getRebasedAtStorageSlot(contract, hash, slotNum, ethers, provider
     }
 }
 
-async function runAll() {
-    await generateAll();
-    await getReclaimStatusAndPrint(cachedBears.bond, BOND_BEARS, true, true);
-    //await getReclaimStatusAndPrint(cachedBears.boo, BOO_BEARS, true, true, false);
-    //await getReclaimStatusAndPrint(cachedBears.baby, BABY_BEARS, false, true, false);
-    //await getReclaimStatusAndPrint(cachedBears.band, BAND_BEARS, false, false, false);
-}
-
-module.exports = { 'generateAll' : generateAll, 'getReclaimStatusAndPrint' : getReclaimStatusAndPrint }
+module.exports = { 'init' : init, 'getReclaimStatusAndPrint' : getReclaimStatusAndPrint }
 },{"async-mutex":130,"ethers":156,"node-fetch":175}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });

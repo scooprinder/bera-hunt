@@ -1,7 +1,5 @@
 <html>
     <head>
-        <script src="https://cdn.ethers.io/lib/ethers-5.7.1.umd.min.js"
-        type="application/javascript"></script>
         <script src="main.js"></script>
         <script type="module">
             let cachedBears = { boo:[], baby:[], bond:[], band: [] }
@@ -11,13 +9,11 @@
             const BABY_BEARS = '0x9E629D779bE89783263D4c4A765c38Eb3f18671C';
             const BAND_BEARS = '0xB4E570232D3E55D2ee850047639DC74DA83C7067';
 
-            const provider = new ethers.providers.Web3Provider(window.ethereum)
-
-            await funcs.generateAll(cachedBears);
-            await funcs.getReclaimStatusAndPrint(cachedBears.bond, BOND_BEARS, true, true, document.getElementById("bond-table"), ethers, provider);
-            await funcs.getReclaimStatusAndPrint(cachedBears.boo, BOO_BEARS, true, true, document.getElementById("boo-table"), ethers, provider);
-            await funcs.getReclaimStatusAndPrint(cachedBears.baby, BABY_BEARS, false, true, document.getElementById("baby-table"), ethers, provider);
-            await funcs.getReclaimStatusAndPrint(cachedBears.band, BAND_BEARS, false, false, document.getElementById("band-table"), ethers, provider);
+            await funcs.init(cachedBears);
+            await funcs.getReclaimStatusAndPrint(cachedBears.bond, BOND_BEARS, true, true, document.getElementById("bond-table"));
+            await funcs.getReclaimStatusAndPrint(cachedBears.boo, BOO_BEARS, true, true, document.getElementById("boo-table"));
+            await funcs.getReclaimStatusAndPrint(cachedBears.baby, BABY_BEARS, false, true, document.getElementById("baby-table"));
+            await funcs.getReclaimStatusAndPrint(cachedBears.band, BAND_BEARS, false, false, document.getElementById("band-table"));
         </script>
         <style>
             .styled-table {
