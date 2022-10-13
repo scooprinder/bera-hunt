@@ -2,18 +2,22 @@
     <head>
         <script src="main.js"></script>
         <script type="module">
-            let cachedBears = { boo:[], baby:[], bond:[], band: [] }
+            async function beginHunt() {
+                let cachedBears = { boo:[], baby:[], bond:[], band: [] }
 
-            const BOND_BEARS = '0xF17Bb82b6e9cC0075ae308e406e5198BA7320545';
-            const BOO_BEARS = '0x2c889A24AF0d0eC6337DB8fEB589fa6368491146';
-            const BABY_BEARS = '0x9E629D779bE89783263D4c4A765c38Eb3f18671C';
-            const BAND_BEARS = '0xB4E570232D3E55D2ee850047639DC74DA83C7067';
+                const BOND_BEARS = '0xF17Bb82b6e9cC0075ae308e406e5198BA7320545';
+                const BOO_BEARS = '0x2c889A24AF0d0eC6337DB8fEB589fa6368491146';
+                const BABY_BEARS = '0x9E629D779bE89783263D4c4A765c38Eb3f18671C';
+                const BAND_BEARS = '0xB4E570232D3E55D2ee850047639DC74DA83C7067';
 
-            await funcs.init(cachedBears);
-            await funcs.getReclaimStatusAndPrint(cachedBears.bond, BOND_BEARS, true, true, document.getElementById("bond-table"));
-            await funcs.getReclaimStatusAndPrint(cachedBears.boo, BOO_BEARS, true, true, document.getElementById("boo-table"));
-            await funcs.getReclaimStatusAndPrint(cachedBears.baby, BABY_BEARS, false, true, document.getElementById("baby-table"));
-            await funcs.getReclaimStatusAndPrint(cachedBears.band, BAND_BEARS, false, false, document.getElementById("band-table"));
+                await funcs.init(cachedBears);
+                await funcs.getReclaimStatusAndPrint(cachedBears.bond, BOND_BEARS, true, true, document.getElementById("bond-table"));
+                await funcs.getReclaimStatusAndPrint(cachedBears.boo, BOO_BEARS, true, true, document.getElementById("boo-table"));
+                await funcs.getReclaimStatusAndPrint(cachedBears.baby, BABY_BEARS, false, true, document.getElementById("baby-table"));
+                await funcs.getReclaimStatusAndPrint(cachedBears.band, BAND_BEARS, false, false, document.getElementById("band-table"));
+            }       
+            
+            document.getElementById("begin-btn").addEventListener("click", beginHunt);
         </script>
         <style>
             .styled-table {
@@ -59,6 +63,8 @@
         <h1>&#x1F43B; Bera Hunt &#x1F43B;</h1>
 
         <p>Requires metamask installed in your browser (or any wallet that exposes window.ethereum really). </p>
+        <p>Click begin hunt to start - this will stream all contracts requests through your metamask (no wallet interactions - if you see a wallet popup, please do not interact with it - if you're still uncomfortable, use a burner)</p>
+        <button id="begin-btn">Begin the hunt</button>
 
         <h2>Bond Bears</h2>
         <table id="bond-table" class="styled-table">
