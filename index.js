@@ -53,14 +53,12 @@ async function getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitCont
         bitDisplayStr = String.fromCharCode(0x274C)
         unclaimed = true;
     }
-    
+
     name.innerText = bear.name;
     row.appendChild(name);
-    claimedBit.innerText = bitDisplayStr;
-    row.appendChild(claimedBit);
 
     if (canClaimBaby) {
-        let claimedBaby = await getRebasedAtStorageSlot(BABY_BEARS, hash, BABY_BEARS_SLOT_NUM, ethers, provider);
+        let claimedBaby = await getRebasedAtStorageSlot(BABY_BEARS, hash, BABY_BEARS_SLOT_NUM);
         let babyDisplayStr;
         
         if (claimedBaby === 1) {
@@ -70,16 +68,14 @@ async function getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitCont
             unclaimed = true;
         }
         
-        
         let babyCell = document.createElement("td");
         babyCell.innerText = babyDisplayStr;
         row.appendChild(babyCell);
     }
     
     if (canClaimBand) {
-        let claimedBand = await getRebasedAtStorageSlot(BAND_BEARS, hash, BAND_BEARS_SLOT_NUM, ethers, provider);
+        let claimedBand = await getRebasedAtStorageSlot(BAND_BEARS, hash, BAND_BEARS_SLOT_NUM);
         let bandDisplayStr;
-        
         if (claimedBand === 1) {
             bandDisplayStr = String.fromCharCode(0x2705)
         } else {
@@ -91,6 +87,10 @@ async function getBeraStats(bear, contract, canClaimBaby, canClaimBand , bitCont
         bandCell.innerText = bandDisplayStr;
         row.appendChild(bandCell);
     }
+
+    
+    claimedBit.innerText = bitDisplayStr;
+    row.appendChild(claimedBit);
 
     let hashCell = document.createElement("td");
     hashCell.innerText = hash;
